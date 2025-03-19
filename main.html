@@ -34,9 +34,48 @@
     <div class="item item25">25</div>
   </div>
 
-<script>
-//Your code goes here 
-</script>
+  <script>
+    // JavaScript code for drag functionality
+    const items = document.querySelectorAll('.item');
+    let activeItem = null;
+    let offsetX, offsetY;
 
-  </body>
+    items.forEach(item => {
+      item.addEventListener('mousedown', (e) => {
+        activeItem = item;
+        offsetX = e.clientX - item.getBoundingClientRect().left;
+        offsetY = e.clientY - item.getBoundingClientRect().top;
+        item.classList.add('active');
+      });
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (activeItem) {
+        const container = document.querySelector('.items');
+        const containerRect = container.getBoundingClientRect();
+        
+        let newX = e.clientX - offsetX;
+        let newY = e.clientY - offsetY;
+
+        // Boundary conditions
+        if (newX < containerRect.left) newX = containerRect.left;
+        if (newX + activeItem.offsetWidth > containerRect.right) newX = containerRect.right - activeItem.offsetWidth;
+        if (newY < containerRect.top) newY = containerRect.top;
+        if (newY + activeItem.offsetHeight > containerRect.bottom) newY = containerRect.bottom - activeItem.offsetHeight;
+
+        activeItem.style.position = 'absolute';
+        activeItem.style.left = `${newX}px`;
+        activeItem.style.top = `${newY}px`;
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (activeItem) {
+        activeItem.classList.remove('active');
+        activeItem = null;
+      }
+    });
+  </script>
+
+</body>
 </html>
