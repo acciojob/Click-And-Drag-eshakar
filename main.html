@@ -41,56 +41,65 @@
   let startX;
   let scrollLeft;
 
-  slider.addEventListener('mousedown', (e) => {
+  function handleMouseDown(e) {
+    // For both regular events and Cypress-triggered events
     isDown = true;
     slider.classList.add('active');
-    startX = e.pageX - slider.offsetLeft;
+    
+    // Handle both regular mouse events and Cypress-triggered events
+    const clientX = e.clientX !== undefined ? e.clientX : e.pageX;
+    startX = clientX - slider.getBoundingClientRect().left;
     scrollLeft = slider.scrollLeft;
-  });
+  }
 
-  slider.addEventListener('mouseleave', () => {
-    isDown = false;
-    slider.classList.remove('active');
-  });
-
-  slider.addEventListener('mouseup', () => {
-    isDown = false;
-    slider.classList.remove('active');
-  });
-
-  slider.addEventListener('mousemove', (e) => {
-    if (!isDown) return; // stop the function from running
+  function handleMouseMove(e) {
+    if (!isDown) return;
     e.preventDefault();
-    const x = e.pageX - slider.offsetLeft;
-    const walk = (x - startX) * 3; // scroll-fast factor
+    
+    // Handle both regular mouse events and Cypress-triggered events
+    const clientX = e.clientX !== undefined ? e.clientX : e.pageX;
+    const x = clientX - slider.getBoundingClientRect().left;
+    const walk = (x - startX) * 2;
+    
+    // Ensure we're actually changing the scroll position
     slider.scrollLeft = scrollLeft - walk;
-  });
+  }
 
-  // Add touch support
+  function handleMouseUp() {
+    isDown = false;
+    slider.classList.remove('active');
+  }
+
+  // Mouse events
+  slider.addEventListener('mousedown', handleMouseDown);
+  slider.addEventListener('mousemove', handleMouseMove);
+  slider.addEventListener('mouseup', handleMouseUp);
+  slider.addEventListener('mouseleave', handleMouseUp);
+
+  // Touch events
   slider.addEventListener('touchstart', (e) => {
-    isDown = true;
-    slider.classList.add('active');
-    startX = e.touches[0].pageX - slider.offsetLeft;
-    scrollLeft = slider.scrollLeft;
-  });
-
-  slider.addEventListener('touchend', () => {
-    isDown = false;
-    slider.classList.remove('active');
-  });
-
-  slider.addEventListener('touchcancel', () => {
-    isDown = false;
-    slider.classList.remove('active');
-  });
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent('mousedown', {
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    });
+    handleMouseDown(mouseEvent);
+  }, { passive: false });
 
   slider.addEventListener('touchmove', (e) => {
     if (!isDown) return;
     e.preventDefault();
-    const x = e.touches[0].pageX - slider.offsetLeft;
-    const walk = (x - startX) * 3;
-    slider.scrollLeft = scrollLeft - walk;
-  });
+    
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent('mousemove', {
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    });
+    handleMouseMove(mouseEvent);
+  }, { passive: false });
+
+  slider.addEventListener('touchend', handleMouseUp);
+  slider.addEventListener('touchcancel', handleMouseUp);
 </script>
 
   </body>
