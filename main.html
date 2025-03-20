@@ -36,70 +36,36 @@
 
 <script>
 //Your code goes here 
-	const slider = document.querySelector('.items');
-  let isDown = false;
-  let startX;
-  let scrollLeft;
+	// Get the element
+const slider = document.querySelector('.items');
 
-  function handleMouseDown(e) {
-    // For both regular events and Cypress-triggered events
-    isDown = true;
-    slider.classList.add('active');
-    
-    // Handle both regular mouse events and Cypress-triggered events
-    const clientX = e.clientX !== undefined ? e.clientX : e.pageX;
-    startX = clientX - slider.getBoundingClientRect().left;
-    scrollLeft = slider.scrollLeft;
-  }
+// Initial values
+let isDown = false;
+let startX;
+let scrollLeft;
 
-  function handleMouseMove(e) {
-    if (!isDown) return;
-    e.preventDefault();
-    
-    // Handle both regular mouse events and Cypress-triggered events
-    const clientX = e.clientX !== undefined ? e.clientX : e.pageX;
-    const x = clientX - slider.getBoundingClientRect().left;
-    const walk = (x - startX) * 2;
-    
-    // Ensure we're actually changing the scroll position
-    slider.scrollLeft = scrollLeft - walk;
-  }
+// Event handlers
+slider.addEventListener('mousedown', (e) => {
+  isDown = true;
+  startX = e.pageX - slider.offsetLeft;
+  scrollLeft = slider.scrollLeft;
+});
 
-  function handleMouseUp() {
-    isDown = false;
-    slider.classList.remove('active');
-  }
+slider.addEventListener('mouseleave', () => {
+  isDown = false;
+});
 
-  // Mouse events
-  slider.addEventListener('mousedown', handleMouseDown);
-  slider.addEventListener('mousemove', handleMouseMove);
-  slider.addEventListener('mouseup', handleMouseUp);
-  slider.addEventListener('mouseleave', handleMouseUp);
+slider.addEventListener('mouseup', () => {
+  isDown = false;
+});
 
-  // Touch events
-  slider.addEventListener('touchstart', (e) => {
-    const touch = e.touches[0];
-    const mouseEvent = new MouseEvent('mousedown', {
-      clientX: touch.clientX,
-      clientY: touch.clientY
-    });
-    handleMouseDown(mouseEvent);
-  }, { passive: false });
-
-  slider.addEventListener('touchmove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    
-    const touch = e.touches[0];
-    const mouseEvent = new MouseEvent('mousemove', {
-      clientX: touch.clientX,
-      clientY: touch.clientY
-    });
-    handleMouseMove(mouseEvent);
-  }, { passive: false });
-
-  slider.addEventListener('touchend', handleMouseUp);
-  slider.addEventListener('touchcancel', handleMouseUp);
+slider.addEventListener('mousemove', (e) => {
+  if(!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - slider.offsetLeft;
+  const walk = (x - startX) * 3; // the multiplier can be anything
+  slider.scrollLeft = scrollLeft - walk;
+});
 </script>
 
   </body>
