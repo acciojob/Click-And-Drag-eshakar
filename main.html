@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Click and Drag</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="items">
@@ -35,62 +35,32 @@
   </div>
 
 <script>
-//Your code goes here 
-	const slider = document.querySelector('.items');
-  let isDown = false;
-  let startX;
-  let scrollLeft;
+const items = document.querySelector('.items');
+let isDown = false;
+let startX;
+let scrollLeft;
 
-  slider.addEventListener('mousedown', (e) => {
-    isDown = true;
-    slider.classList.add('active');
-    startX = e.pageX;
-    scrollLeft = slider.scrollLeft;
-  });
+items.addEventListener('mousedown', (e) => {
+  isDown = true;
+  startX = e.pageX - items.offsetLeft;
+  scrollLeft = items.scrollLeft;
+});
 
-  slider.addEventListener('mouseleave', () => {
-    isDown = false;
-    slider.classList.remove('active');
-  });
+items.addEventListener('mouseleave', () => {
+  isDown = false;
+});
 
-  slider.addEventListener('mouseup', () => {
-    isDown = false;
-    slider.classList.remove('active');
-  });
+items.addEventListener('mouseup', () => {
+  isDown = false;
+});
 
-  slider.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX;
-    const walk = (startX - x) * 3; // Adjust the multiplier as needed
-    slider.scrollLeft = scrollLeft + walk;
-  });
-
-  // Add touch support
-  slider.addEventListener('touchstart', (e) => {
-    isDown = true;
-    slider.classList.add('active');
-    startX = e.touches[0].pageX;
-    scrollLeft = slider.scrollLeft;
-  });
-
-  slider.addEventListener('touchend', () => {
-    isDown = false;
-    slider.classList.remove('active');
-  });
-
-  slider.addEventListener('touchcancel', () => {
-    isDown = false;
-    slider.classList.remove('active');
-  });
-
-  slider.addEventListener('touchmove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.touches[0].pageX;
-    const walk = (startX - x) * 3;
-    slider.scrollLeft = scrollLeft + walk;
-  });
+items.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - items.offsetLeft;
+  const walk = (x - startX) * 2;
+  items.scrollLeft = scrollLeft - walk;
+});
 </script>
 
   </body>
